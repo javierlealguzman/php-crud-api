@@ -20,7 +20,10 @@ if($_SERVER["REQUEST_METHOD"] == "GET")
     }
     else
     {
-        echo Contact::getAllJSON();
+        $filter_field = isset($_GET["filter_field"]) ? $_GET["filter_field"] : "";
+        $filter_value = isset($_GET["filter_value"]) ? $_GET["filter_value"] : "";
+        
+        echo Contact::getAllJSON($filter_field, $filter_value);
     }
 }
 ?>

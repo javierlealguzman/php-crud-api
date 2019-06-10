@@ -176,15 +176,32 @@ class Contact {
         return $result !== false;
     }
 
-    public static function getContacts()
+    public static function getContacts($filter_field, $filter_value)
     {
         $contacts = array();
-
+        
+        $columns_bd = array("firstname", "surname", "phone", "email", "photo");
+        
+        $filter_field = strtolower($filter_field);
+        
+        $filter = in_array($filter_field, $columns_bd);
+        
         $connection = MySqlConnection::getDBConnection();
 
-        $query = "SELECT id, first_name, surname, phone, email, photo FROM contacts ORDER BY id";
+        $query = "SELECT id, first_name, surname, phone, email, photo FROM contacts";
+
+        if(in_array($filter_field, array("phone", "email")))
+        {
+            $filter_value = "%".$filter_value."%";
+            if($filter) $query .= " WHERE " . $filter_field . " like ?";
+        }
+        elseif($filter)
+            $query .= " WHERE " . $filter_field . " = ?";
 
         $command = $connection->prepare($query);
+
+        if($filter)
+            $command->bind_param("s", $filter_value);
 
         $command->execute();
 
@@ -212,10 +229,10 @@ class Contact {
         ));
     }
 
-    public static function getAllJSON() {
+    public static function getAllJSON($filter_field, $filter_value) {
         $contacts = array();
-
-        foreach(self::getContacts() as $contact) {
+        
+        foreach(self::getContacts($filter_field, $filter_value) as $contact) {
             array_push($contacts, json_decode($contact->toJSON()));
         }
 
