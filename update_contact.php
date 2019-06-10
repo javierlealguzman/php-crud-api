@@ -25,11 +25,7 @@ if($_SERVER["REQUEST_METHOD"] == "PUT")
             if(isset($data["photo"]))
             {
                 if($data["photo"] != $contact->getBase64Photo())
-                {
-                    echo $data["photo"];
-                    echo '<br/>';
-                    echo $contact->getBase64Photo();
-                    
+                {   
                     $change_photo = true;
                     $random_name = $contact->getFirstName()."_".uniqid().".jpg";
                     $contact->setPhoto($random_name);
